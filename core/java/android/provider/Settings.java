@@ -4519,6 +4519,13 @@ public final class Settings {
         public static final String LISTVIEW_ANIMATION = "listview_animation";
 
         /**
+         * Whether to mute annoying notifications
+         * @hide
+         */
+        public static final String MUTE_ANNOYING_NOTIFICATIONS_THRESHOLD =
+                "mute_annoying_notifications_threshold";
+
+        /**
          * ListView Interpolators
          * 0 == None
          * 1 == accelerate_interpolator
