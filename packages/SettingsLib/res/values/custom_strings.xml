@@ -22,4 +22,7 @@
     <string name="screen_zoom_summary_smaller">Smaller</string>
     <string name="screen_zoom_summary_smallest">Smallest</string>
 
+    <!-- accessibility label for button to open running apps prefscreen [CHAR LIMIT=NONE] -->
+    <string name="accessibility_quick_settings_running_services">Open Running Services screen</string>
+
 </resources>
