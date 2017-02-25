@@ -4572,7 +4572,10 @@ message MetricsEvent {
     // Add new aosp constants above this line.
     // END OF AOSP CONSTANTS
 
-    //SiXROM
+	//SiXROM
 	SIX = 420;
+    LOCKSCREEN_WEATHER_SETTINGS = 1201;
+    OMNI_QS_WEATHER = 1202;
+    OMNI_QS_WEATHER_DETAILS = 1203;
   }
 }
