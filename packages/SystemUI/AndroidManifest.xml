@@ -122,6 +122,9 @@
     <!-- OmniJaws -->
     <uses-permission android:name="org.omnirom.omnijaws.READ_WEATHER" />
 
+    <!-- Screenstate -->
+    <protected-broadcast android:name="android.intent.action.SCREEN_STATE_SERVICE_UPDATE" />
+
     <!-- Needed for WallpaperManager.clear in ImageWallpaper.updateWallpaperLocked -->
     <uses-permission android:name="android.permission.SET_WALLPAPER"/>
 
@@ -285,6 +288,13 @@
                 <action android:name="com.android.systemui.action.RESTART_THEME" />
             </intent-filter>
         </receiver>
+
+        <service android:name=".six.screenstate.ScreenStateService"
+                android:exported="true" >
+            <intent-filter>
+               <action android:name="android.intent.action.SCREEN_STATE_SERVICE_UPDATE"/>
+            </intent-filter>
+        </service>
 
         <!-- started from PhoneWindowManager
              TODO: Should have an android:permission attribute -->
