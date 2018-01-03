@@ -196,6 +196,14 @@
     <!-- Height of the status bar header bar when on Keyguard -->
     <dimen name="status_bar_header_height_keyguard">40dp</dimen>
 
+    <!-- The height of the container that holds the system icons in the quick settings header. -->
+    <dimen name="qs_header_system_icons_area_height">40dp</dimen>
+
+    <!-- The height of the container that holds the system icons in the quick settings header in the
+         car setting. -->
+    <dimen name="car_qs_header_system_icons_area_height">54dp</dimen>
+
+
     <!-- Margin start of the system icons super container -->
     <dimen name="system_icons_super_container_margin_start">16dp</dimen>
 
