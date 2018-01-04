@@ -92,4 +92,27 @@
     <java-symbol type="dimen" name="edge_gesture_perpendicular_distance" />
     <java-symbol type="dimen" name="edge_gesture_trigger_thickness" />
 
+    <!-- Defines the default set of global actions. Actions may still be disabled or hidden based
+         on the current state of the device.
+         Each item must be one of the following strings:
+         "power" = Power off
+         "settings" = An action to launch settings
+         "airplane" = Airplane mode toggle
+         "silent" = silent mode
+         "restart" = restart device
+         -->
+    <string-array translatable="false" name="config_globalActionsList_custom">
+        <item>recovery</item>
+        <item>power</item>
+        <item>airplane</item>
+        <item>restart</item>
+        <item>screenshot</item>
+        <item>torch</item>
+        <item>screenrecord</item>
+        <item>settings</item>
+        <item>lockdown</item>
+        <item>users</item>
+        <item>silent</item>
+    </string-array>
+
 </resources>

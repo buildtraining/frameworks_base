@@ -411,7 +411,7 @@ class GlobalActionsDialog implements DialogInterface.OnDismissListener, DialogIn
 
         mItems = new ArrayList<Action>();
         String[] defaultActions = mContext.getResources().getStringArray(
-                R.array.config_globalActionsList);
+                R.array.config_globalActionsList_custom);
 
         ArraySet<String> addedKeys = new ArraySet<String>();
         for (int i = 0; i < defaultActions.length; i++) {
