@@ -156,4 +156,10 @@
   <!-- OmniJaws icon -->
   <java-symbol type="drawable" name="ic_qs_weather_default_on" />
 
+    <!-- Whether device supports an alt. ambient display -->
+    <java-symbol type="bool" name="config_alt_ambient_display"/>
+
+    <!-- Whether to enable doze always on -->
+    <java-symbol type="bool" name="config_enableDozeAlwaysOn"/>
+
 </resources>
