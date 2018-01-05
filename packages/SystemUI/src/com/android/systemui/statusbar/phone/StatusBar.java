@@ -293,7 +293,7 @@ public class StatusBar extends SystemUI implements DemoMode,
         ActivatableNotificationView.OnActivatedListener,
         ExpandableNotificationRow.ExpansionLogger, NotificationData.Environment,
         ExpandableNotificationRow.OnExpandClickListener, InflationCallback,
-        ColorExtractor.OnColorsChangedListener, ConfigurationListener, PackageChangedListener {
+        ColorExtractor.OnColorsChangedListener, ConfigurationListener, PackageChangedListener, FlashlightController.FlashlightListener {
     public static final boolean MULTIUSER_DEBUG = false;
 
     public static final boolean ENABLE_REMOTE_INPUT =
@@ -1406,6 +1406,7 @@ public class StatusBar extends SystemUI implements DemoMode,
         ThreadedRenderer.overrideProperty("ambientRatio", String.valueOf(1.5f));
 
         mFlashlightController = Dependency.get(FlashlightController.class);
+        mFlashlightController.addCallback(this);
     }
 
     protected void createNavigationBar() {
@@ -3663,6 +3664,21 @@ public class StatusBar extends SystemUI implements DemoMode,
         }
     }
 
+    @Override
+    public void onFlashlightChanged(boolean enabled) {
+        //
+    }
+
+    @Override
+    public void onFlashlightError() {
+        //
+    }
+
+    @Override
+    public void onFlashlightAvailabilityChanged(boolean available) {
+        //
+    }
+
     void touchAutoHide() {
         // update transient bar autohide
         if (mStatusBarMode == MODE_SEMI_TRANSPARENT || (mNavigationBar != null
@@ -4687,6 +4703,8 @@ public class StatusBar extends SystemUI implements DemoMode,
         Dependency.get(ActivityStarterDelegate.class).setActivityStarterImpl(null);
         mDeviceProvisionedController.removeCallback(mUserSetupObserver);
         Dependency.get(ConfigurationController.class).removeCallback(this);
+
+        mFlashlightController.removeCallback(this);
     }
 
     @Override
