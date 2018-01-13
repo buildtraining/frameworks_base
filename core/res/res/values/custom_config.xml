@@ -114,4 +114,7 @@
         <item>silent</item>
     </string-array>
 
+    <!-- Doze always on default value -->
+    <bool name="config_dozeAlwaysOnDisplayEnabledDefault">false</bool>
+
 </resources>
