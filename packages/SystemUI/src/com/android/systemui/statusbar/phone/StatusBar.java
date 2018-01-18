@@ -538,6 +538,8 @@ public class StatusBar extends SystemUI implements DemoMode,
     private View mTickerView;
     private boolean mTicking;
 
+    private boolean mAmbientMediaPlaying;
+
     // Tracking finger for opening/closing.
     boolean mTracking;
 
@@ -670,6 +672,7 @@ public class StatusBar extends SystemUI implements DemoMode,
                     clearCurrentMediaNotification();
                     updateMediaMetaData(true, true);
                 }
+
                 setMediaPlaying();
             }
         }
@@ -680,12 +683,9 @@ public class StatusBar extends SystemUI implements DemoMode,
             if (DEBUG_MEDIA) Log.v(TAG, "DEBUG_MEDIA: onMetadataChanged: " + metadata);
             mMediaMetadata = metadata;
             updateMediaMetaData(true, true);
-            if (mTickerEnabled == 2) {
-                tickTrackInfo();
-            }
+
             setMediaPlaying();
         }
-
     };
 
     public void setMediaPlaying() {
@@ -693,6 +693,7 @@ public class StatusBar extends SystemUI implements DemoMode,
                 getMediaControllerPlaybackState(mMediaController)
                 || PlaybackState.STATE_BUFFERING ==
                 getMediaControllerPlaybackState(mMediaController)) {
+            tickTrackInfo(mMediaController);
             mNoMan.setMediaPlaying(true);
             final String currentPkg = mMediaController.getPackageName().toLowerCase();
             for (String packageName : mNavMediaArrowsExcludeList) {
@@ -704,6 +705,9 @@ public class StatusBar extends SystemUI implements DemoMode,
                 mNavigationBar.setMediaPlaying(true);
             }
         } else {
+            if (mAmbientIndicationContainer != null) {
+                ((AmbientIndicationContainer)mAmbientIndicationContainer).hideIndication();
+            }
             mNoMan.setMediaPlaying(false);
             if (mNavigationBar != null) {
                 mNavigationBar.setMediaPlaying(false);
@@ -711,21 +715,27 @@ public class StatusBar extends SystemUI implements DemoMode,
         }
     }
 
-    private void tickTrackInfo() {
+    private void tickTrackInfo(MediaController mc) {
         ArrayList<Entry> activeNotifications = mNotificationData.getActiveNotifications();
         int N = activeNotifications.size();
-        if (PlaybackState.STATE_PLAYING ==
-                getMediaControllerPlaybackState(mMediaController)
-                || PlaybackState.STATE_BUFFERING ==
-                getMediaControllerPlaybackState(mMediaController)) {
-            final String pkg = mMediaController.getPackageName();
-            for (int i = 0; i < N; i++) {
-                final Entry entry = activeNotifications.get(i);
-                if (entry.notification.getPackageName().equals(pkg)) {
+        final String pkg = mc.getPackageName();
+        for (int i = 0; i < N; i++) {
+            final Entry entry = activeNotifications.get(i);
+            if (entry.notification.getPackageName().equals(pkg)) {
+                if (mTickerEnabled == 2) {
                     tick(entry.notification, true, true, mMediaMetadata);
-                    break;
                 }
+                if (mAmbientIndicationContainer != null) {
+                    ((AmbientIndicationContainer)mAmbientIndicationContainer).setIndication(mMediaMetadata);
+                }
+                break;
             }
+        }
+    }
+
+    public void triggerAmbientForMedia() {
+        if (mAmbientMediaPlaying) {
+            mDozeServiceHost.fireNotificationMedia();
         }
     }
 
@@ -1217,6 +1227,7 @@ public class StatusBar extends SystemUI implements DemoMode,
 
         mNoMan = (NotificationManager)
                         mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+
         setMediaPlaying();
 
         boolean showNav = Settings.Secure.getInt(mContext.getContentResolver(),
@@ -2552,8 +2563,10 @@ public class StatusBar extends SystemUI implements DemoMode,
                 clearCurrentMediaNotification();
                 mMediaController = controller;
                 mMediaController.registerCallback(mMediaListener);
-                setMediaPlaying();
+
                 mMediaMetadata = mMediaController.getMetadata();
+                setMediaPlaying();
+
                 if (DEBUG_MEDIA) {
                     Log.v(TAG, "DEBUG_MEDIA: insert listener, receive metadata: "
                             + mMediaMetadata);
@@ -2603,6 +2616,7 @@ public class StatusBar extends SystemUI implements DemoMode,
                 Log.v(TAG, "DEBUG_MEDIA: Disconnecting from old controller: "
                         + mMediaController.getPackageName());
             }
+
             mMediaController.unregisterCallback(mMediaListener);
             setMediaPlaying();
         }
@@ -5162,9 +5176,9 @@ public class StatusBar extends SystemUI implements DemoMode,
                 mKeyguardUserSwitcher.setKeyguard(true, fromShadeLocked);
             }
             if (mStatusBarView != null) mStatusBarView.removePendingHideExpandedRunnables();
-            if (mAmbientIndicationContainer != null) {
+            /*if (mAmbientIndicationContainer != null) {
                 mAmbientIndicationContainer.setVisibility(View.VISIBLE);
-            }
+            }*/
         } else {
             mKeyguardIndicationController.setVisible(false);
             if (mKeyguardUserSwitcher != null) {
@@ -5173,9 +5187,9 @@ public class StatusBar extends SystemUI implements DemoMode,
                         mState == StatusBarState.SHADE_LOCKED ||
                         fromShadeLocked);
             }
-            if (mAmbientIndicationContainer != null) {
+            /*if (mAmbientIndicationContainer != null) {
                 mAmbientIndicationContainer.setVisibility(View.INVISIBLE);
-            }
+            }*/
         }
         if (mState == StatusBarState.KEYGUARD || mState == StatusBarState.SHADE_LOCKED) {
             mScrimController.setKeyguardShowing(true);
@@ -6067,6 +6081,12 @@ public class StatusBar extends SystemUI implements DemoMode,
             }
         }
 
+        public void fireNotificationMedia() {
+            for (Callback callback : mCallbacks) {
+                callback.onNotificationMedia();
+            }
+        }
+
         @Override
         public void addCallback(@NonNull Callback callback) {
             mCallbacks.add(callback);
@@ -6439,13 +6459,19 @@ public class StatusBar extends SystemUI implements DemoMode,
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.LOCKSCREEN_MAX_NOTIF_CONFIG),
                     false, this, UserHandle.USER_ALL);
-            update();
-
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.FORCE_AMBIENT_FOR_MEDIA),
+                    false, this, UserHandle.USER_ALL);
+                    update();
         }
 
         @Override
         public void onChange(boolean selfChange, Uri uri) {
             update();
+            if (uri.equals(Settings.System.getUriFor(
+                    Settings.System.FORCE_AMBIENT_FOR_MEDIA))) {
+                setForceAmbient();
+            }
         }
 
         public void update() {
@@ -6467,6 +6493,7 @@ public class StatusBar extends SystemUI implements DemoMode,
             mStatusBarWindow.setLockscreenDoubleTapToSleep();
             mMaxKeyguardNotifConfig = Settings.System.getIntForUser(mContext.getContentResolver(),
                     Settings.System.LOCKSCREEN_MAX_NOTIF_CONFIG, 5, mCurrentUserId);
+            setForceAmbient();
         }
     }
 
@@ -6525,6 +6552,12 @@ public class StatusBar extends SystemUI implements DemoMode,
         if (mQSPanel != null) {
             mQSPanel.updateSettings();
         }
+    }
+
+    private void setForceAmbient() {
+        mAmbientMediaPlaying = Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.FORCE_AMBIENT_FOR_MEDIA, 0,
+                UserHandle.USER_CURRENT) == 1;
     }
 
     protected final ContentObserver mNavbarObserver = new ContentObserver(mHandler) {
