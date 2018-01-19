@@ -36,5 +36,5 @@
     <color name="icon_color_overview_dark">@android:color/black</color>
 
     <!-- Powersave color -->
-    <color name="powersave_warning_color">#ff8e0101</color><!-- rgb 142 1 1 -->
+    <color name="powersave_warning_color">#ff720000</color><!-- rgb 142 1 1 -->
 </resources>
