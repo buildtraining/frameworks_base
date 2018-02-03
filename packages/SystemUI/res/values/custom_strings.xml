@@ -198,4 +198,7 @@
     <!-- QS customizer -->
     <string name="drag_or_tap_to_add_tiles">Drag or tap to add tiles</string>
 
+    <!-- Data saver icon -->
+    <string name="status_bar_data_saver">Data saver</string>
+
 </resources>
