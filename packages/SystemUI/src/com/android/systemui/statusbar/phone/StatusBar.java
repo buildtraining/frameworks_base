@@ -468,6 +468,8 @@ public class StatusBar extends SystemUI implements DemoMode,
 
     // viewgroup containing the normal contents of the statusbar
     LinearLayout mStatusBarContent;
+    // Other views that need hiding for the notification ticker
+    View mCenterClockLayout;
 
     // expanded notifications
     protected NotificationPanelView mNotificationPanel; // the sliding/resizing panel within the notification window
@@ -1203,6 +1205,7 @@ public class StatusBar extends SystemUI implements DemoMode,
                     mStatusBarView.setScrimController(mScrimController);
                     mStatusBarView.setBouncerShowing(mBouncerShowing);
                     mStatusBarContent = (LinearLayout) mStatusBarView.findViewById(R.id.status_bar_contents);
+                    mCenterClockLayout = mStatusBarView.findViewById(R.id.center_clock_layout);
                     updateTickerSettings();
                     initTickerView();
                     setAreThereNotifications();
@@ -3971,6 +3974,8 @@ public class StatusBar extends SystemUI implements DemoMode,
             mStatusBarContent.startAnimation(loadAnim(true, null));
             mTickerView.setVisibility(View.VISIBLE);
             mTickerView.startAnimation(loadAnim(false, null));
+            mCenterClockLayout.setVisibility(View.GONE);
+            mCenterClockLayout.startAnimation(loadAnim(true, null));
         }
 
         @Override
@@ -3979,14 +3984,17 @@ public class StatusBar extends SystemUI implements DemoMode,
             mStatusBarContent.startAnimation(loadAnim(false, null));
             mTickerView.setVisibility(View.GONE);
             mTickerView.startAnimation(loadAnim(true, mTickingDoneListener));
+            mCenterClockLayout.setVisibility(View.VISIBLE);
+            mCenterClockLayout.startAnimation(loadAnim(false, null));
         }
 
         @Override
         public void tickerHalting() {
             if (mStatusBarContent.getVisibility() != View.VISIBLE) {
                 mStatusBarContent.setVisibility(View.VISIBLE);
-                mStatusBarContent
-                        .startAnimation(loadAnim(false, null));
+                mStatusBarContent.startAnimation(loadAnim(false, null));
+                mCenterClockLayout.setVisibility(View.VISIBLE);
+                mCenterClockLayout.startAnimation(loadAnim(false, null));
             }
             mTickerView.setVisibility(View.GONE);
             // we do not animate the ticker away at this point, just get rid of it (b/6992707)
