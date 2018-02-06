@@ -33,6 +33,8 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.LinearLayout;
 import android.util.Slog;
+import android.widget.ImageSwitcher;
+import android.widget.ImageView;
 
 import com.android.systemui.Dependency;
 import com.android.systemui.Interpolators;
@@ -66,7 +68,7 @@ public class CollapsedStatusBarFragment extends Fragment implements CommandQueue
     private DarkIconManager mDarkIconManager;
     private SignalClusterView mSignalClusterView;
 	
-	private View mSixLogo;
+	private ImageView mSixLogo;
     private LinearLayout mCenterClockLayout;
     private boolean mShowLogo;
 	private View mCustomCarrierLabel;
@@ -129,7 +131,8 @@ public class CollapsedStatusBarFragment extends Fragment implements CommandQueue
         mSignalClusterView = mStatusBar.findViewById(R.id.signal_cluster);
         mCenterClockLayout = (LinearLayout) mStatusBar.findViewById(R.id.center_clock_layout);
         Dependency.get(DarkIconDispatcher.class).addDarkReceiver(mSignalClusterView);
-		mSixLogo = mStatusBar.findViewById(R.id.status_bar_logo);
+		mSixLogo = (ImageView) mStatusBar.findViewById(R.id.status_bar_logo);
+        Dependency.get(DarkIconDispatcher.class).addDarkReceiver(mSixLogo);
 		mCustomCarrierLabel = mStatusBar.findViewById(R.id.statusbar_carrier_text);
 		updateSettings(false);
         // Default to showing until we know otherwise.
@@ -160,6 +163,7 @@ public class CollapsedStatusBarFragment extends Fragment implements CommandQueue
         super.onDestroyView();
         Dependency.get(DarkIconDispatcher.class).removeDarkReceiver(mSignalClusterView);
         Dependency.get(StatusBarIconController.class).removeIconGroup(mDarkIconManager);
+        Dependency.get(DarkIconDispatcher.class).removeDarkReceiver(mSixLogo);
         if (mNetworkController.hasEmergencyCryptKeeperText()) {
             mNetworkController.removeCallback(mSignalCallback);
         }
