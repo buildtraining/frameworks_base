@@ -79,7 +79,7 @@
     <eat-comment />
 
     <color name="holo_primary_dark">@color/black</color>
-    <color name="holo_primary">#ff222222</color>
+    <color name="holo_primary">#ff171923</color>
     <color name="holo_control_activated">@color/holo_blue_light</color>
     <color name="holo_control_normal">#39cccccc</color>
     <color name="holo_button_pressed">#59f0f0f0</color>
