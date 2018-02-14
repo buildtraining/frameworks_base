@@ -3972,20 +3972,24 @@ public class StatusBar extends SystemUI implements DemoMode,
             mTicking = true;
             mStatusBarContent.setVisibility(View.GONE);
             mStatusBarContent.startAnimation(loadAnim(true, null));
-            mTickerView.setVisibility(View.VISIBLE);
-            mTickerView.startAnimation(loadAnim(false, null));
             mCenterClockLayout.setVisibility(View.GONE);
             mCenterClockLayout.startAnimation(loadAnim(true, null));
+            if (mTickerView != null) {
+                mTickerView.setVisibility(View.VISIBLE);
+                mTickerView.startAnimation(loadAnim(false, null));
+            }
         }
 
         @Override
         public void tickerDone() {
             mStatusBarContent.setVisibility(View.VISIBLE);
             mStatusBarContent.startAnimation(loadAnim(false, null));
-            mTickerView.setVisibility(View.GONE);
-            mTickerView.startAnimation(loadAnim(true, mTickingDoneListener));
             mCenterClockLayout.setVisibility(View.VISIBLE);
             mCenterClockLayout.startAnimation(loadAnim(false, null));
+            if (mTickerView != null) {
+                mTickerView.setVisibility(View.GONE);
+                mTickerView.startAnimation(loadAnim(true, mTickingDoneListener));
+            }
         }
 
         @Override
