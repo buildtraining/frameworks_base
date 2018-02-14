@@ -1368,6 +1368,7 @@ public class StatusBar extends SystemUI implements DemoMode,
                     mQuickStatusBarHeader = ((QSFragment) qs).getQuickStatusBarHeader();
                     mStatusBarHeaderMachine.addObserver(mQuickStatusBarHeader);
                     mStatusBarHeaderMachine.updateEnablement();
+                    mQuickStatusBarHeader = ((QSFragment) qs).getQsHeader();
                 }
             });
         }
@@ -6519,6 +6520,12 @@ public class StatusBar extends SystemUI implements DemoMode,
             resolver.registerContentObserver(Settings.System.getUriFor(
             	    Settings.System.LOCKSCREEN_ROTATION),
                     false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.SHOW_BATTERY_PERCENT),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.Secure.getUriFor(
+                    Settings.Secure.STATUS_BAR_BATTERY_STYLE),
+                    false, this, UserHandle.USER_ALL);
                     update(); 
         }
 
@@ -6543,6 +6550,19 @@ public class StatusBar extends SystemUI implements DemoMode,
             setQsPanelOptions();
             updateTickerSettings();
             setLockscreenRotation();
+            updateBatterySettings();
+        }
+    }
+
+    private void updateBatterySettings() {
+        if (mStatusBarView != null) {
+            mStatusBarView.updateBatterySettings();
+        }
+        if (mKeyguardStatusBar != null) {
+            mKeyguardStatusBar.updateBatterySettings();
+        }
+        if (mQuickStatusBarHeader != null) {
+            mQuickStatusBarHeader.updateBatterySettings();
         }
     }
 
